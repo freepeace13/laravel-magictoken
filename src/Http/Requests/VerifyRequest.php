@@ -1,6 +1,6 @@
 <?php
 
-namespace MagicToken\Http;
+namespace MagicToken\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use MagicToken\Http\FormRequest;
