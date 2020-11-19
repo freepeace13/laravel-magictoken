@@ -1,0 +1,42 @@
+{
+    "name": "freepeace13/laravel-magictoken",
+    "description": "",
+    "keywords": [
+        "laravel",
+        "token",
+        "verification"
+    ],
+    "homepage": "https://github.com/freepeace13/laravel-magictoken",
+    "autoload": {
+        "psr-4": {
+            "MagicToken\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MagicToken\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MagicToken\\MagicTokenServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^7.2",
+        "illuminate/auth": "^7.29",
+        "illuminate/container": "^7.29",
+        "illuminate/contracts": "^7.29",
+        "illuminate/database": "^7.29",
+        "opis/closure": "^3.6"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^5.9",
+        "phpunit/phpunit": "^8.5"
+    }
+}
