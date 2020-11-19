@@ -8,8 +8,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use MagicToken\Events\MagicTokenCreated;
-use MagicToken\Events\MagicTokenVerified;
+use MagicToken\Events\TokenCreated;
+use MagicToken\Events\TokenVerified;
 
 class MagicToken extends Model
 {
@@ -58,7 +58,7 @@ class MagicToken extends Model
 
         $instance->save();
 
-        Event::dispatch(new MagicTokenCreated($instance));
+        Event::dispatch(new TokenCreated($instance));
 
         return $instance;
     }
@@ -118,7 +118,7 @@ class MagicToken extends Model
             'verified_at' => Carbon::now()
         ])->save();
 
-        Event::dispatch(new MagicTokenVerified($this));
+        Event::dispatch(new TokenVerified($this));
 
         return $this;
     }
