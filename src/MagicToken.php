@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use MagicToken\Events\TokenCreated;
 use MagicToken\Events\TokenVerified;
+use Illuminate\Support\Facades\URL;
+use MagicToken\Contracts\Action;
+use MagicToken\Exceptions\InvalidTokenException;
 
 class MagicToken extends Model
 {
@@ -35,6 +38,7 @@ class MagicToken extends Model
             $length = config('verifytoken.token.length', 6);
 
             $model->token = Str::random(64);
+            $model->max_tries = config('magictoken.max_tries', 3);
             $model->code = join('', Arr::random(range(0, 9), $length));
         });
     }
@@ -42,18 +46,16 @@ class MagicToken extends Model
     /**
      * Create new actionable token with the given options.
      *
-     * @param MagicToken\ActionInterface $action
+     * @param MagicToken\Contracts\Action $action
      * @param integer $expires
      * @param integer $maxTries
      *
      * @return self
      */
-    public static function create(ActionInterface $action, $expires = 5, $maxTries = 3)
+    public static function create(Action $action, $expires = 5)
     {
         $instance = new static;
-
         $instance->action = $action;
-        $instance->max_tries = $maxTries;
         $instance->expires_at = Carbon::now()->addMinutes($expires);
 
         $instance->save();
@@ -61,66 +63,6 @@ class MagicToken extends Model
         Event::dispatch(new TokenCreated($instance));
 
         return $instance;
-    }
-
-    /**
-     * Find pending token that throws an exception when not found.
-     *
-     * @param mixed $token
-     * @return self
-     *
-     * @throws MagicToken\InvalidTokenException
-     */
-    public static function findValidToken($token)
-    {
-        $existing = self::findPendingToken($token);
-
-        if (is_null($existing)) {
-            throw new InvalidTokenException('Token expired or deleted.');
-        }
-
-        return $existing;
-    }
-
-    /**
-     * Find unexpired, unverified and retriable token record.
-     *
-     * @param mixed $token
-     * @return self
-     */
-    public static function findPendingToken($token)
-    {
-        return self::expired(false)
-            ->retriable()
-            ->whereToken($token)
-            ->whereNull('verified_at')
-            ->first();
-    }
-
-    /**
-     * Delete all existing expired tokens.
-     *
-     * @return bool
-     */
-    public static function deleteExpiredTokens()
-    {
-        return self::expired(true)->delete();
-    }
-
-    /**
-     * Mark token as verified and dispatches verified event.
-     *
-     * @return self
-     */
-    public function markVerified()
-    {
-        $this->forceFill([
-            'verified_at' => Carbon::now()
-        ])->save();
-
-        Event::dispatch(new TokenVerified($this));
-
-        return $this;
     }
 
     /**
@@ -146,6 +88,16 @@ class MagicToken extends Model
     {
         return $builder->whereColumn('num_tries', '<=', 'max_tries');
     }
+
+    /**
+     * Get the signed token's url.
+     *
+     * @return string
+     */
+     public function getUrlAttribute()
+     {
+         return URL::signedRoute('magictoken.verify', ['token' => $this->token]);
+     }
 
     /**
      * Unserialize action attribute value on get.

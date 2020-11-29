@@ -1,18 +1,22 @@
 <?php
 
 return [
-    'code_length' => 6,
+    'length' => 6,
 
-    'http_requests' => [
+    'max_tries' => 3,
+
+    'http' => [
         'path' => 'magictoken',
 
-        'form_inputs' => [
-            'token' => 'input_token',
-            'pincode' => 'input_pincode',
+        'input_keys' => [
+            'token' => 'token',
+            'pincode' => 'pincode',
         ]
     ],
 
     'database' => [
-        'table_name' => 'magic_tokens'
+        'expires' => 5,
+
+        'table_name' => 'magic_tokens',
     ]
 ];

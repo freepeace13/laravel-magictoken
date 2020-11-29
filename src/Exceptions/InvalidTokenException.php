@@ -1,6 +1,6 @@
 <?php
 
-namespace MagicToken;
+namespace MagicToken\Exceptions;
 
 use RuntimeException;
 
