@@ -8,6 +8,8 @@ return [
     'http' => [
         'path' => 'magictoken',
 
+        'access_form_view' => 'magictoken::verify',
+
         'input_keys' => [
             'token' => 'token',
             'pincode' => 'pincode',

@@ -3,6 +3,7 @@
 namespace MagicToken\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Response;
 
 class AccessTokensForm
@@ -19,6 +20,6 @@ class AccessTokensForm
             return Response::noContent();
         }
 
-        return view('magictoken::verify');
+        return View::make('magictoken::verify');
     }
 }
