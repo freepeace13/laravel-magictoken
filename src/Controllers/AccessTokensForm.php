@@ -4,9 +4,10 @@ namespace MagicToken\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Response;
+use MagicToken\JsonResponse;
+use Illuminate\Routing\Controller;
 
-class AccessTokensForm
+class AccessTokensForm extends Controller
 {
     /**
      * Handle incoming request.
@@ -16,10 +17,12 @@ class AccessTokensForm
      */
     public function __invoke(Request $request)
     {
+        $token = $request->query('token');
+
         if ($request->wantsJson()) {
-            return Response::noContent();
+            return (new JsonResponse)($token);
         }
 
-        return View::make('magictoken::verify');
+        return View::make(config('magictoken.view'));
     }
 }

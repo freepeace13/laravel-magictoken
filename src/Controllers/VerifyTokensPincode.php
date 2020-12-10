@@ -1,23 +1,20 @@
 <?php
 
-namespace MagicToken\Http\Controllers;
+namespace MagicToken\Controllers;
 
-use Exception;
-use MagicToken\MagicToken;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use MagicToken\DatabaseMagicToken;
 use Illuminate\Validation\ValidationException;
-use MagicToken\TokenRepository;
 
 class VerifyTokensPincode
 {
     public function __invoke(Request $request)
     {
-        $existing = TokenRepository::findValidToken(
-            $request->tokenInput()
-        );
+        $tokenQuery = $request->query('token');
 
-        if ($this->attemptVerify($existing, $request->pincodeInput())) {
+        $existing = DatabaseMagicToken::findPendingToken($tokenQuery);
+
+        if ($this->attemptVerify($existing, $request->input('pincode'))) {
             $result = $existing->action->handle();
 
             $existing->delete();
@@ -26,7 +23,7 @@ class VerifyTokensPincode
         }
     }
 
-    protected function attemptVerify(MagicToken $token, $pincode)
+    protected function attemptVerify(DatabaseMagicToken $token, $pincode)
     {
         if ((string) $token->code !== (string) $pincode) {
             $token->increment('num_tries');
@@ -39,10 +36,8 @@ class VerifyTokensPincode
 
     protected function throwIncorrectPincodeErrors()
     {
-        $inputKey = config('magictoken.http.input_keys.pincode');
-
         throw ValidationException::withMessage([
-            $inputKey => $this->incorrectPincodeMessage()
+            'pincode' => $this->incorrectPincodeMessage()
         ]);
     }
 

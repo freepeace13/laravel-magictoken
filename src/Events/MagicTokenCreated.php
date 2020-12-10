@@ -5,7 +5,7 @@ namespace MagicToken\Events;
 use MagicToken\MagicToken;
 use Illuminate\Queue\SerializesModels;
 
-class TokenCreated
+class MagicTokenCreated
 {
     use SerializesModels;
 

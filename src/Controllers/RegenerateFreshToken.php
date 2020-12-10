@@ -2,10 +2,10 @@
 
 namespace MagicToken\Controllers;
 
+use Illuminate\Http\Request;
+use MagicToken\JsonResponse;
+use MagicToken\DatabaseMagicToken;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Response;
-use MagicToken\TokenRepository;
 
 class RegenerateFreshToken
 {
@@ -17,14 +17,18 @@ class RegenerateFreshToken
      */
     public function __invoke(Request $request)
     {
-        $token = TokenRepository::replicate($request->tokenInput());
+        $tokenQuery = $request->query('token');
 
-        if (! $request->wantsJson()) {
-            return Redirect::to($token->url);
+        $original = DatabaseMagicToken::findPendingToken($tokenQuery);
+
+        $newValue = DatabaseMagicToken::createFrom($original);
+
+        if ($request->wantsJson()) {
+            return (new JsonResponse)($newValue->token);
         }
 
-        return Response::json([
-            'verify_url' => $token->url
-        ], 200);
+        return Redirect::route('magictoken.verify', [
+            'token' => $newValue->token
+        ]);
     }
 }

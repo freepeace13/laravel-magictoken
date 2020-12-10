@@ -29,8 +29,6 @@ class MagicTokenServiceProvider extends ServiceProvider
         $this->publishMigrations();
 
         $this->bootViews();
-        $this->bootRoutes();
-        $this->bootRequestMacros();
     }
 
     protected function bootViews()
@@ -40,37 +38,6 @@ class MagicTokenServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/magictoken')
         ]);
-    }
-
-    protected function bootRoutes()
-    {
-        Route::group([
-            'middleware' => 'web',
-            'prefix' => config('magictoken.http.path')
-        ], __DIR__.'/routes.php');
-    }
-
-    protected function bootRequestMacros()
-    {
-        Request::macro('hasValidToken', function() {
-            return ! is_null(TokenRepository::findPendingToken(
-                $this->tokenInput()
-            ));
-        });
-
-        Request::macro('tokenInput', function () {
-            return $this->route(
-                config('magictoken.http.input_keys.token'),
-                null
-            );
-        });
-
-        Request::macro('pincodeInput', function () {
-            return $this->input(
-                config('magictoken.http.input_keys.pincode'),
-                null
-            );
-        });
     }
 
     protected function publishConfig()

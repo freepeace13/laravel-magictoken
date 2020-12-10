@@ -7,7 +7,17 @@
     <body>
         <form method="POST">
             @csrf
-            <input type="number" name="{{ config('magictoken.http.input_keys.pincode') }}" />
+
+            @if ($errors->has('pincode'))
+                <div class="alert alert-danger">
+                    $errors->first('pincode');
+                </div>
+            @endif
+
+            <div class="form-group">
+                <input type="number" class="form-control" name="pincode" />
+            </div>
+
             <button type="submit">Verify</button>
         </form>
     </body>

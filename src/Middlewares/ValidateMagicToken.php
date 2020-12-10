@@ -4,12 +4,17 @@ namespace MagicToken\Middlewares;
 
 use Closure;
 use Illuminate\Http\Request;
+use MagicToken\DatabaseMagicToken;
 
-class ValidateToken
+class ValidateMagicToken
 {
     public function handle(Request $request, Closure $next)
     {
-        if (! $request->hasValidToken()) {
+        $tokenQuery = $request->query('token');
+
+        $instance = DatabaseMagicToken::findPendingToken($tokenQuery);
+
+        if (is_null($instance)) {
             abort(401);
         }
 
