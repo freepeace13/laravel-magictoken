@@ -2,6 +2,7 @@
 
 namespace MagicToken;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -16,6 +17,26 @@ class MagicTokenServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/magictoken.php', 'magictoken');
+
+        $this->app->singleton('magictoken', function ($app) {
+            return new MagicToken($app['magictoken.repository']);
+        });
+
+        $this->app->bind('magictoken.repository', function ($app) {
+            $key = $app['config']['app.key'];
+
+            if (Str::startsWith($key, 'base64:')) {
+                $key = base64_decode(substr($key, 7));
+            }
+
+            return new MagicTokenRepository(
+                DatabaseToken::class,
+                $key,
+                $app['config']['magictoken.length'],
+                $app['config']['magictoken.max_tries'],
+                $app['config']['magictoken.database.expires']
+            );
+        });
     }
 
     /**

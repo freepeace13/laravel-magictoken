@@ -1,6 +1,6 @@
 <?php
 
-namespace MagicToken\Contracts;
+namespace MagicToken;
 
 interface Action
 {

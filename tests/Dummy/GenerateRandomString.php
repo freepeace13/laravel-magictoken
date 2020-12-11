@@ -1,11 +1,11 @@
 <?php
 
-namespace MaginToken\Test\DummyActions;
+namespace MaginToken\Test\Dummy;
 
 use Illuminate\Support\Str;
 use MagicToken\Contracts\Action;
 
-class GenerateToken implements Action
+class GenerateRandomString implements Action
 {
     public $token;
 

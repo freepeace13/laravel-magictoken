@@ -5,9 +5,8 @@ namespace MagicToken\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use MagicToken\JsonResponse;
-use Illuminate\Routing\Controller;
 
-class AccessTokensForm extends Controller
+class AccessTokensForm
 {
     /**
      * Handle incoming request.

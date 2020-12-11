@@ -1,6 +1,6 @@
 <?php
 
-namespace MagicToken\Test;
+namespace MagicToken\Tests;
 
 use MagicToken\MagicToken;
 use MagicToken\MagicTokenServiceProvider;

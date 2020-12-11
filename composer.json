@@ -14,7 +14,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "MagicToken\\Test\\": "tests"
+            "MagicToken\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -24,7 +24,10 @@
         "laravel": {
             "providers": [
                 "MagicToken\\MagicTokenServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "MagicToken": "MagicToken\\Facades\\MagicToken"
+            }
         }
     },
     "require": {

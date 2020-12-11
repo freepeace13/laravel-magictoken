@@ -24,12 +24,13 @@ class CreateMagicTokensTable extends Migration
             $table->increments('id');
             $table->string('token');
             $table->string('code');
+            $table->string('receiver');
             $table->text('action');
-            $table->timestamp('verified_at')->nullable();
             $table->unsignedTinyInteger('num_tries')->default(0);
             $table->unsignedTinyInteger('max_tries');
-            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
+
+            $table->unique(['token', 'code']);
         });
     }
 
