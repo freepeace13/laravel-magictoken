@@ -19,10 +19,10 @@ class MagicTokenServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/magictoken.php', 'magictoken');
 
         $this->app->singleton('magictoken', function ($app) {
-            return new MagicToken($app['magictoken.repository']);
+            return new MagicToken($app);
         });
 
-        $this->app->bind('magictoken.repository', function ($app) {
+        $this->app->bind('magictoken.tokens', function ($app) {
             $key = $app['config']['app.key'];
 
             if (Str::startsWith($key, 'base64:')) {

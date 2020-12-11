@@ -47,8 +47,6 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        MagicToken::routes();
-
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 }

@@ -11,11 +11,11 @@ class MagicToken
 {
     use ForwardsCalls;
 
-    protected $tokens;
+    protected $app;
 
-    public function __construct(MagicTokenRepository $tokens)
+    public function __construct($app)
     {
-        $this->tokens = $tokens;
+        $this->app = $app;
     }
 
     public static function routes($callback = null, array $options = [])
@@ -38,6 +38,8 @@ class MagicToken
 
     public function __call($method, $parameters)
     {
-        return $this->forwardCallTo($this->tokens, $method, $parameters);
+        return $this->forwardCallTo(
+            $this->app['magictoken.repository'], $method, $parameters
+        );
     }
 }

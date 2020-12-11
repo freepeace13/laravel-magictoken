@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use MagicToken\Events\MagicTokenCreated;
+use MagicToken\Exceptions\InvalidTokenException;
 
 class MagicTokenRepository
 {
@@ -32,18 +33,18 @@ class MagicTokenRepository
 
     public function create(Action $action, $receiver, $maxTries = null)
     {
-        $this->fireTokenEvent(
-            $instance = tap(new $this->model, function ($model) {
-                $model->action = $action;
-                $model->receiver = $receiver;
-                $model->max_tries = $maxTries ?? $this->maxTries;
+        $instance = new $this->model;
 
-                $model->token = $this->createNewToken();
-                $model->code = $this->createNewCode();
+        $instance->action = $action;
+        $instance->receiver = $receiver;
+        $instance->max_tries = $maxTries ?? $this->maxTries;
 
-                $model->save();
-            })
-        );
+        $instance->token = $this->createNewToken();
+        $instance->code = $this->createNewCode();
+
+        $instance->save();
+
+        Event::dispatch(new MagicTokenCreated($instance));
 
         return $instance->token;
     }
@@ -55,7 +56,7 @@ class MagicTokenRepository
         $newToken = $this->create(
             $existing->action,
             $existing->receiver,
-            $existing->num_tries
+            $existing->max_tries
         );
 
         $this->delete($existing->token);
@@ -65,8 +66,12 @@ class MagicTokenRepository
 
     public function attempt($token, $pincode)
     {
-        if (! $record = $this->find($token)) {
+        if (!($record = $this->find($token))) {
             return false;
+        }
+
+        if ($record->num_tries > $record->max_tries) {
+            throw new InvalidTokenException('Token has reached the maximum attempts.');
         }
 
         if ((string) $record->code !== (string) $pincode) {
@@ -114,18 +119,9 @@ class MagicTokenRepository
             ->isPast();
     }
 
-    protected function fireTokenEvent(DatabaseToken $record)
-    {
-        Event::dispatch(new MagicTokenCreated(
-            $record->receiver,
-            $record->code,
-            $record->token
-        ));
-    }
-
     protected function createNewToken()
     {
-        return hash_hmac('sha2564', Str::random(0), $this->hashKey);
+        return hash_hmac('sha256', Str::random(40), $this->hashKey);
     }
 
     protected function createNewCode()

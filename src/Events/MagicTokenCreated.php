@@ -2,7 +2,7 @@
 
 namespace MagicToken\Events;
 
-use MagicToken\MagicToken;
+use MagicToken\DatabaseToken;
 use Illuminate\Queue\SerializesModels;
 
 class MagicTokenCreated
@@ -12,17 +12,23 @@ class MagicTokenCreated
     /**
      * The magic token instance.
      *
-     * @var \MagicToken\MagicToken
+     * @var \MagicToken\DatabaseToken
      */
     public $token;
+
+    public $receiver;
+
+    public $code;
 
     /**
      * Create a new instance of event.
      *
-     * @param \MagicToken\MagicToken $token
+     * @param \MagicToken\DatabaseToken $token
      */
-    public function __construct(MagicToken $token)
+    public function __construct(DatabaseToken $token)
     {
-        $this->token = $token;
+        $this->receiver = $token->receiver;
+        $this->code = $token->code;
+        $this->token = $token->token;
     }
 }

@@ -1,21 +1,21 @@
 <?php
 
-namespace MaginToken\Test\Dummy;
+namespace MagicToken\Tests\Dummy;
 
 use Illuminate\Support\Str;
-use MagicToken\Contracts\Action;
+use MagicToken\Action;
 
 class GenerateRandomString implements Action
 {
-    public $token;
+    public $value;
 
-    public function __construct(int $length = 64)
+    public function __construct()
     {
-        $this->token = Str::random($length);
+        $this->value = Str::random(40);
     }
 
     public function handle()
     {
-        return $this->token;
+        return $this->value;
     }
 }

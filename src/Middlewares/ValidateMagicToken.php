@@ -3,6 +3,7 @@
 namespace MagicToken\Middlewares;
 
 use Closure;
+use MagicToken\Facades\MagicToken;
 use Illuminate\Http\Request;
 use MagicToken\DatabaseMagicToken;
 
